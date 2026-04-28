@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Notifications')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="dashboard-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-section">Job Seeker</div>
+    <ul class="sidebar-nav">
+      <li><a th:href="@{/jobseeker/dashboard}"><i class="fas fa-tachometer-alt nav-icon"></i> Dashboard</a></li>
+      <li><a th:href="@{/jobs}"><i class="fas fa-search nav-icon"></i> Browse Jobs</a></li>
+      <li><a th:href="@{/jobseeker/applications}"><i class="fas fa-file-alt nav-icon"></i> My Applications</a></li>
+      <li><a th:href="@{/jobseeker/notifications}" class="active"><i class="fas fa-bell nav-icon"></i> Notifications</a></li>
+      <li><a th:href="@{/jobseeker/profile}"><i class="fas fa-user nav-icon"></i> My Profile</a></li>
+      <li><a th:href="@{/logout}"><i class="fas fa-sign-out-alt nav-icon"></i> Logout</a></li>
+    </ul>
+  </aside>
+
+  <main class="main-content">
+    <h1 style="font-size:1.6rem; margin-bottom:0.5rem;"><i class="fas fa-bell"></i> Notifications</h1>
+    <p class="text-muted mb-4">All your job alerts and application updates</p>
+
+    <div th:if="${#lists.isEmpty(notifications)}" class="empty-state">
+      <i class="fas fa-bell-slash"></i>
+      <h3>No notifications yet</h3>
+      <p>Apply for jobs to start receiving status updates here.</p>
+    </div>
+
+    <div th:unless="${#lists.isEmpty(notifications)}" class="card">
+      <div th:each="notif : ${notifications}"
+           style="padding:1rem; border-bottom:1px solid var(--border); display:flex; align-items:flex-start; gap:1rem;"
+           th:classappend="${!notif.read} ? ' ' : ''">
+        <div style="width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;"
+             th:classappend="${notif.notificationType == 'SHORTLISTED'} ? 'stat-icon amber' :
+                             (${notif.notificationType == 'HIRED'} ? 'stat-icon green' :
+                             (${notif.notificationType == 'REJECTED'} ? 'stat-icon red' : 'stat-icon blue'))">
+          <i class="fas"
+             th:classappend="${notif.notificationType == 'APPLICATION_UPDATE'} ? 'fa-bell' : 'fa-info-circle'"></i>
+        </div>
+        <div style="flex:1;">
+          <p th:text="${notif.message}" style="font-weight: 500;"></p>
+          <small class="text-muted" th:text="${#temporals.format(notif.createdAt,'MMM dd, yyyy HH:mm')}"></small>
+        </div>
+        <span th:unless="${notif.read}" class="badge badge-primary" style="flex-shrink:0;">New</span>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

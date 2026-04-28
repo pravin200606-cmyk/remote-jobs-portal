@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">RemoteWork Hub</string>
+    <string name="title_activity_main">RemoteWork Hub</string>
+    <string name="package_name">com.remotework.hub</string>
+    <string name="custom_url_scheme">com.remotework.hub</string>
+</resources>

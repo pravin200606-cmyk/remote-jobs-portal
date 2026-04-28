@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Manage Jobs')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="dashboard-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-section">Admin Panel</div>
+    <ul class="sidebar-nav">
+      <li><a th:href="@{/admin/dashboard}"><i class="fas fa-tachometer-alt nav-icon"></i> Dashboard</a></li>
+      <li><a th:href="@{/admin/users}"><i class="fas fa-users nav-icon"></i> Manage Users</a></li>
+      <li><a th:href="@{/admin/jobs}" class="active"><i class="fas fa-briefcase nav-icon"></i> Manage Jobs</a></li>
+      <li><a th:href="@{/jobs}"><i class="fas fa-globe nav-icon"></i> View Site</a></li>
+      <li><a th:href="@{/logout}"><i class="fas fa-sign-out-alt nav-icon"></i> Logout</a></li>
+    </ul>
+  </aside>
+
+  <main class="main-content">
+    <div class="d-flex justify-between align-center mb-4" style="flex-wrap:wrap; gap:1rem;">
+      <h1 style="font-size:1.6rem;">Manage Jobs</h1>
+      <span class="badge badge-primary" th:text="${#lists.size(jobs)} + ' Total Jobs'"></span>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success" data-auto-dismiss>
+      <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+    </div>
+
+    <div class="filter-bar mb-3" style="padding:0.75rem 1rem;">
+      <input type="text" id="tableSearch" class="form-control" placeholder="Search jobs..." style="max-width:300px;"/>
+    </div>
+
+    <div class="card">
+      <div class="table-wrapper">
+        <table class="filterable-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Job Title</th>
+              <th>Company</th>
+              <th>Category</th>
+              <th>Posted</th>
+              <th>Views</th>
+              <th>Featured</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="job, stat : ${jobs}">
+              <td class="text-muted" th:text="${stat.count}"></td>
+              <td>
+                <a th:href="@{/jobs/{id}(id=${job.id})}" style="color:var(--primary-light); font-weight:600;"
+                   th:text="${job.title}" target="_blank"></a>
+              </td>
+              <td class="text-muted" th:text="${job.companyName}"></td>
+              <td><span class="badge badge-primary" th:text="${#strings.replace(job.category.name(),'_',' ')}"></span></td>
+              <td class="text-muted" th:text="${#temporals.format(job.createdAt,'MMM dd')}"></td>
+              <td class="text-muted" th:text="${job.viewsCount}"></td>
+              <td>
+                <form th:action="@{/admin/jobs/{id}/featured(id=${job.id})}" method="post" style="display:inline;">
+                  <button type="submit" class="btn btn-sm"
+                          th:classappend="${job.featured} ? 'btn-accent' : 'btn-ghost'"
+                          th:text="${job.featured} ? '⭐ Yes' : 'No'"></button>
+                </form>
+              </td>
+              <td>
+                <form th:action="@{/admin/jobs/{id}/toggle(id=${job.id})}" method="post" style="display:inline;">
+                  <button type="submit" class="btn btn-sm"
+                          th:classappend="${job.active} ? 'btn-success' : 'btn-ghost'"
+                          th:text="${job.active} ? 'Active' : 'Hidden'"></button>
+                </form>
+              </td>
+              <td>
+                <form th:action="@{/admin/jobs/{id}/delete(id=${job.id})}" method="post" style="display:inline;">
+                  <button type="submit" class="btn btn-danger btn-sm"
+                          data-confirm="Delete this job permanently?">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </form>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

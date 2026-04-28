@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Register')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="auth-page">
+    <div style="width: 100%; max-width: 640px;">
+        <div class="auth-header text-center mb-4">
+            <h1>Create Your Account</h1>
+            <p class="text-muted">Choose how you want to use RemoteWork Hub</p>
+        </div>
+
+        <div class="form-row form-row-2 gap-3">
+            <a th:href="@{/register/jobseeker}" class="register-option">
+                <div class="register-option-icon">👨‍💻</div>
+                <h3>Job Seeker</h3>
+                <p>Find remote jobs, upload your resume, track applications, and get notified of new opportunities.</p>
+                <div class="btn btn-primary mt-2 w-full">Register as Job Seeker</div>
+            </a>
+
+            <a th:href="@{/register/employer}" class="register-option">
+                <div class="register-option-icon">🏢</div>
+                <h3>Employer</h3>
+                <p>Post remote jobs, receive applications, manage candidates, and hire the best remote talent.</p>
+                <div class="btn btn-outline mt-2 w-full">Register as Employer</div>
+            </a>
+        </div>
+
+        <div class="auth-footer text-center mt-4">
+            Already have an account? <a th:href="@{/login}">Sign in here</a>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

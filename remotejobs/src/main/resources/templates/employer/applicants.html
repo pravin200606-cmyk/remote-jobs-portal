@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Applicants')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="dashboard-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-section">Employer</div>
+    <ul class="sidebar-nav">
+      <li><a th:href="@{/employer/dashboard}"><i class="fas fa-tachometer-alt nav-icon"></i> Dashboard</a></li>
+      <li><a th:href="@{/employer/jobs/new}"><i class="fas fa-plus-circle nav-icon"></i> Post New Job</a></li>
+      <li><a th:href="@{/employer/jobs}" class="active"><i class="fas fa-briefcase nav-icon"></i> My Job Posts</a></li>
+      <li><a th:href="@{/employer/notifications}"><i class="fas fa-bell nav-icon"></i> Notifications</a></li>
+      <li><a th:href="@{/employer/profile}"><i class="fas fa-building nav-icon"></i> Company Profile</a></li>
+      <li><a th:href="@{/logout}"><i class="fas fa-sign-out-alt nav-icon"></i> Logout</a></li>
+    </ul>
+  </aside>
+
+  <main class="main-content">
+    <a th:href="@{/employer/jobs}" class="btn btn-ghost btn-sm mb-3">
+      <i class="fas fa-arrow-left"></i> Back to Jobs
+    </a>
+
+    <div class="card mb-3" style="padding:1.25rem;">
+      <div class="d-flex justify-between align-center" style="flex-wrap:wrap; gap:1rem;">
+        <div>
+          <h1 style="font-size:1.4rem;" th:text="'Applicants for: ' + ${job.title}"></h1>
+          <p class="text-muted" th:text="'Company: ' + ${job.companyName}"></p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+          <span class="badge badge-primary" th:text="${#lists.size(applications)} + ' Applicants'"></span>
+          <span class="badge" th:classappend="${job.active} ? 'badge-success' : 'badge-danger'"
+                th:text="${job.active} ? 'Active' : 'Closed'"></span>
+        </div>
+      </div>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success" data-auto-dismiss>
+      <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+    </div>
+
+    <div class="filter-bar mb-3" style="padding:0.75rem 1rem;">
+      <input type="text" id="tableSearch" class="form-control" placeholder="Search applicants..." style="max-width:300px;"/>
+    </div>
+
+    <div th:if="${#lists.isEmpty(applications)}" class="empty-state card">
+      <i class="fas fa-users"></i>
+      <h3>No applications yet</h3>
+      <p>Applications will appear here when candidates apply for this job.</p>
+    </div>
+
+    <div th:unless="${#lists.isEmpty(applications)}" class="card">
+      <div class="table-wrapper">
+        <table class="filterable-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Applicant</th>
+              <th>Skills</th>
+              <th>Applied</th>
+              <th>Resume</th>
+              <th>Status</th>
+              <th>Update Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="app, stat : ${applications}">
+              <td class="text-muted" th:text="${stat.count}"></td>
+              <td>
+                <strong th:text="${app.applicant.fullName}"></strong><br/>
+                <small class="text-muted" th:text="${app.applicant.email}"></small>
+                <div th:if="${app.applicant.yearsExperience != null}">
+                  <small class="text-muted"><i class="fas fa-clock"></i> <span th:text="${app.applicant.yearsExperience}"></span> yrs exp</small>
+                </div>
+              </td>
+              <td>
+                <div th:if="${app.applicant.skills != null}" style="max-width:200px;">
+                  <span th:each="skill, s : ${#strings.arraySplit(app.applicant.skills,',')}"
+                        th:if="${s.index < 3}"
+                        class="badge badge-muted"
+                        th:text="${#strings.trim(skill)}"
+                        style="margin:1px;"></span>
+                </div>
+              </td>
+              <td th:text="${#temporals.format(app.appliedAt,'MMM dd, yyyy')}" class="text-muted"></td>
+              <td>
+                <a th:if="${app.resumeFilename != null}"
+                   th:href="@{/uploads/{f}(f=${app.resumeFilename})}"
+                   target="_blank" class="btn btn-ghost btn-sm">
+                  <i class="fas fa-download"></i> Resume
+                </a>
+                <span th:unless="${app.resumeFilename != null}" class="text-muted">—</span>
+              </td>
+              <td>
+                <span class="badge"
+                      th:classappend="${app.status.name() == 'SHORTLISTED'} ? 'badge-warning' :
+                                      (${app.status.name() == 'HIRED'} ? 'badge-success' :
+                                      (${app.status.name() == 'REJECTED'} ? 'badge-danger' :
+                                      (${app.status.name() == 'INTERVIEW_SCHEDULED'} ? 'badge-info' : 'badge-muted')))"
+                      th:text="${#strings.replace(app.status.name(),'_',' ')}"></span>
+              </td>
+              <td>
+                <form th:action="@{/employer/applications/{id}/update-status(id=${app.id})}" method="post"
+                      style="display:flex; gap:6px; flex-wrap:wrap; min-width:200px;">
+                  <select name="status" class="form-control" style="flex:1; min-width:140px; padding:6px 10px; font-size:0.82rem;">
+                    <option th:each="s : ${statuses}" th:value="${s}"
+                            th:text="${#strings.replace(s.name(),'_',' ')}"
+                            th:selected="${s == app.status}"></option>
+                  </select>
+                  <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                </form>
+                <div th:if="${app.coverLetter != null}" class="mt-1">
+                  <details style="cursor:pointer;">
+                    <summary style="font-size:0.8rem; color:var(--text-muted);">View Cover Letter</summary>
+                    <div style="margin-top:8px; padding:10px; background:var(--bg-card2); border-radius:6px; font-size:0.82rem; white-space:pre-line; max-height:150px; overflow-y:auto;"
+                         th:text="${app.coverLetter}"></div>
+                  </details>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

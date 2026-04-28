@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Post Job')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="dashboard-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-section">Employer</div>
+    <ul class="sidebar-nav">
+      <li><a th:href="@{/employer/dashboard}"><i class="fas fa-tachometer-alt nav-icon"></i> Dashboard</a></li>
+      <li><a th:href="@{/employer/jobs/new}" class="active"><i class="fas fa-plus-circle nav-icon"></i> Post New Job</a></li>
+      <li><a th:href="@{/employer/jobs}"><i class="fas fa-briefcase nav-icon"></i> My Job Posts</a></li>
+      <li><a th:href="@{/employer/notifications}"><i class="fas fa-bell nav-icon"></i> Notifications</a></li>
+      <li><a th:href="@{/employer/profile}"><i class="fas fa-building nav-icon"></i> Company Profile</a></li>
+      <li><a th:href="@{/logout}"><i class="fas fa-sign-out-alt nav-icon"></i> Logout</a></li>
+    </ul>
+  </aside>
+
+  <main class="main-content">
+    <a th:href="@{/employer/jobs}" class="btn btn-ghost btn-sm mb-3">
+      <i class="fas fa-arrow-left"></i> Back to Jobs
+    </a>
+
+    <h1 style="font-size:1.6rem; margin-bottom:0.5rem;"
+        th:text="${job.id != null} ? 'Edit Job Post' : 'Post a New Job'"></h1>
+    <p class="text-muted mb-4">Fill in the details for your remote job opening</p>
+
+    <form th:action="${job.id != null} ? @{/employer/jobs/{id}/edit(id=${job.id})} : @{/employer/jobs/new}"
+          th:object="${job}" method="post">
+      <div style="display:grid; grid-template-columns: 2fr 1fr; gap:1.5rem;">
+
+        <div>
+          <div class="card mb-3">
+            <h3 class="mb-3"><i class="fas fa-info-circle"></i> Job Details</h3>
+
+            <div class="form-group">
+              <label class="form-label">Job Title *</label>
+              <input type="text" th:field="*{title}" class="form-control"
+                     placeholder="e.g. Senior React Developer" required/>
+              <div class="form-error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Company Name *</label>
+              <input type="text" th:field="*{companyName}" class="form-control"
+                     placeholder="Your company name" required/>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Job Description *</label>
+              <textarea th:field="*{description}" class="form-control" rows="10"
+                        data-max-chars="5000"
+                        placeholder="Describe the role, responsibilities, requirements..."></textarea>
+              <div class="form-error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Skills Required *</label>
+              <input type="text" th:field="*{skillsRequired}" class="form-control"
+                     placeholder="Java, Spring Boot, React, AWS, Docker..." required/>
+              <small class="text-muted">Comma-separated list of required skills</small>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card mb-3">
+            <h3 class="mb-3"><i class="fas fa-sliders-h"></i> Job Settings</h3>
+
+            <div class="form-group">
+              <label class="form-label">Category *</label>
+              <select th:field="*{category}" class="form-control" required>
+                <option value="">Select Category</option>
+                <option th:each="cat : ${categories}" th:value="${cat}"
+                        th:text="${#strings.replace(cat.name(),'_',' ')}"></option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Job Type</label>
+              <select th:field="*{jobType}" class="form-control">
+                <option value="">Select Type</option>
+                <option th:each="jt : ${jobTypes}" th:value="${jt}"
+                        th:text="${#strings.replace(jt.name(),'_',' ')}"></option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Experience Level</label>
+              <select th:field="*{experienceLevel}" class="form-control">
+                <option value="">Select Level</option>
+                <option th:each="exp : ${experienceLevels}" th:value="${exp}"
+                        th:text="${#strings.replace(exp.name(),'_',' ')}"></option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Salary Range</label>
+              <input type="text" th:field="*{salary}" class="form-control"
+                     placeholder="e.g. $80,000 - $100,000/year"/>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Timezone Preference</label>
+              <input type="text" th:field="*{timezonePreference}" class="form-control"
+                     placeholder="e.g. EST/PST, Any, GMT±5"/>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Location Requirement</label>
+              <input type="text" th:field="*{locationRequirement}" class="form-control"
+                     placeholder="e.g. Worldwide, US Only, EU Only"/>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Application Deadline</label>
+              <input type="datetime-local" th:field="*{applicationDeadline}" class="form-control"/>
+            </div>
+
+            <div class="form-group" style="display:flex; gap:1.5rem;">
+              <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                <input type="checkbox" th:field="*{active}" style="width:18px; height:18px; accent-color:var(--primary);"/>
+                <span>Active (Visible to seekers)</span>
+              </label>
+              <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                <input type="checkbox" th:field="*{featured}" style="width:18px; height:18px; accent-color:var(--accent);"/>
+                <span>Featured</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary btn-block">
+              <i class="fas fa-save"></i>
+              <span th:text="${job.id != null} ? 'Update Job' : 'Post Job'"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </main>
+</div>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

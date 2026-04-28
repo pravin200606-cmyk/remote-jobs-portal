@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('My Applications')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="dashboard-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-section">Job Seeker</div>
+    <ul class="sidebar-nav">
+      <li><a th:href="@{/jobseeker/dashboard}"><i class="fas fa-tachometer-alt nav-icon"></i> Dashboard</a></li>
+      <li><a th:href="@{/jobs}"><i class="fas fa-search nav-icon"></i> Browse Jobs</a></li>
+      <li><a th:href="@{/jobseeker/applications}" class="active"><i class="fas fa-file-alt nav-icon"></i> My Applications</a></li>
+      <li><a th:href="@{/jobseeker/notifications}">
+        <i class="fas fa-bell nav-icon"></i> Notifications
+        <span th:if="${unreadCount > 0}" style="margin-left:auto; background:var(--danger); color:white; border-radius:10px; padding:1px 7px; font-size:0.75rem;" th:text="${unreadCount}"></span>
+      </a></li>
+      <li><a th:href="@{/jobseeker/profile}"><i class="fas fa-user nav-icon"></i> My Profile</a></li>
+      <li><a th:href="@{/logout}"><i class="fas fa-sign-out-alt nav-icon"></i> Logout</a></li>
+    </ul>
+  </aside>
+
+  <main class="main-content">
+    <div class="d-flex justify-between align-center mb-4" style="flex-wrap:wrap; gap:1rem;">
+      <div>
+        <h1 style="font-size:1.6rem;">My Applications</h1>
+        <p class="text-muted" th:text="'Total: ' + ${#lists.size(applications)} + ' application(s)'"></p>
+      </div>
+      <a th:href="@{/jobs}" class="btn btn-primary"><i class="fas fa-search"></i> Find More Jobs</a>
+    </div>
+
+    <!-- Filter -->
+    <div class="filter-bar mb-3" style="padding:0.75rem 1rem;">
+      <input type="text" id="tableSearch" class="form-control" placeholder="Search applications..." style="max-width:300px;"/>
+    </div>
+
+    <div th:if="${#lists.isEmpty(applications)}" class="empty-state">
+      <i class="fas fa-file-alt"></i>
+      <h3>No applications yet</h3>
+      <p>Start applying for remote jobs to see your applications here.</p>
+      <a th:href="@{/jobs}" class="btn btn-primary mt-2">Browse Jobs</a>
+    </div>
+
+    <div th:unless="${#lists.isEmpty(applications)}" class="card">
+      <div class="table-wrapper">
+        <table class="filterable-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Job Title</th>
+              <th>Company</th>
+              <th>Type</th>
+              <th>Applied On</th>
+              <th>Status</th>
+              <th>Resume</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="app, stat : ${applications}">
+              <td class="text-muted" th:text="${stat.count}"></td>
+              <td>
+                <a th:href="@{/jobs/{id}(id=${app.job.id})}"
+                   style="color:var(--primary-light); font-weight:600;"
+                   th:text="${app.job.title}"></a>
+              </td>
+              <td th:text="${app.job.companyName}" class="text-muted"></td>
+              <td>
+                <span class="badge badge-muted" th:text="${#strings.replace(app.job.jobType.name(),'_',' ')}"></span>
+              </td>
+              <td th:text="${#temporals.format(app.appliedAt,'MMM dd, yyyy')}" class="text-muted"></td>
+              <td>
+                <span class="badge"
+                      th:classappend="${app.status.name() == 'SHORTLISTED'} ? 'badge-warning' :
+                                      (${app.status.name() == 'HIRED'} ? 'badge-success' :
+                                      (${app.status.name() == 'REJECTED'} ? 'badge-danger' :
+                                      (${app.status.name() == 'INTERVIEW_SCHEDULED'} ? 'badge-info' : 'badge-muted')))"
+                      th:text="${#strings.replace(app.status.name(),'_',' ')}"></span>
+              </td>
+              <td>
+                <a th:if="${app.resumeFilename != null}"
+                   th:href="@{/uploads/{f}(f=${app.resumeFilename})}"
+                   target="_blank" class="btn btn-ghost btn-sm">
+                  <i class="fas fa-download"></i>
+                </a>
+                <span th:unless="${app.resumeFilename != null}" class="text-muted">—</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

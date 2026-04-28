@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('My Profile')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="dashboard-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-section">Job Seeker</div>
+    <ul class="sidebar-nav">
+      <li><a th:href="@{/jobseeker/dashboard}"><i class="fas fa-tachometer-alt nav-icon"></i> Dashboard</a></li>
+      <li><a th:href="@{/jobs}"><i class="fas fa-search nav-icon"></i> Browse Jobs</a></li>
+      <li><a th:href="@{/jobseeker/applications}"><i class="fas fa-file-alt nav-icon"></i> My Applications</a></li>
+      <li><a th:href="@{/jobseeker/notifications}"><i class="fas fa-bell nav-icon"></i> Notifications</a></li>
+      <li><a th:href="@{/jobseeker/profile}" class="active"><i class="fas fa-user nav-icon"></i> My Profile</a></li>
+      <li><a th:href="@{/logout}"><i class="fas fa-sign-out-alt nav-icon"></i> Logout</a></li>
+    </ul>
+  </aside>
+
+  <main class="main-content">
+    <h1 style="font-size:1.6rem; margin-bottom:0.5rem;">My Profile</h1>
+    <p class="text-muted mb-4">Keep your profile up-to-date for better job matches</p>
+
+    <div th:if="${success}" class="alert alert-success" data-auto-dismiss>
+      <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+    </div>
+    <div th:if="${error}" class="alert alert-error" data-auto-dismiss>
+      <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+    </div>
+
+    <form th:action="@{/jobseeker/profile/update}" method="post" enctype="multipart/form-data">
+      <div style="display:grid; grid-template-columns: 2fr 1fr; gap:1.5rem;">
+
+        <div>
+          <div class="card mb-3">
+            <h3 class="mb-3"><i class="fas fa-user"></i> Personal Information</h3>
+            <div class="form-row form-row-2">
+              <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input type="text" name="fullName" class="form-control" th:value="${user.fullName}" required/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Phone</label>
+                <input type="tel" name="phone" class="form-control" th:value="${user.phone}"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" th:value="${user.email}" readonly style="opacity:0.6;"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">LinkedIn URL</label>
+              <input type="url" name="linkedinUrl" class="form-control" th:value="${user.linkedinUrl}" placeholder="https://linkedin.com/in/yourname"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Profile Summary</label>
+              <textarea name="profileSummary" class="form-control" rows="4" placeholder="Tell employers about yourself..."
+                        data-max-chars="500" th:text="${user.profileSummary}"></textarea>
+            </div>
+          </div>
+
+          <div class="card mb-3">
+            <h3 class="mb-3"><i class="fas fa-code"></i> Skills & Experience</h3>
+            <div class="form-group">
+              <label class="form-label">Skills (comma-separated)</label>
+              <input type="text" name="skills" class="form-control"
+                     th:value="${user.skills}" placeholder="Java, React, Python, AWS, Docker..."/>
+            </div>
+            <div class="form-row form-row-2">
+              <div class="form-group">
+                <label class="form-label">Years of Experience</label>
+                <input type="number" name="yearsExperience" class="form-control" min="0" max="50"
+                       th:value="${user.yearsExperience}"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Expected Salary</label>
+                <input type="text" name="expectedSalary" class="form-control"
+                       th:value="${user.expectedSalary}" placeholder="e.g. $50,000/year"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Preferred Timezone</label>
+              <select name="timezone" class="form-control">
+                <option value="">Select Timezone</option>
+                <option value="Asia/Kolkata" th:selected="${user.timezone == 'Asia/Kolkata'}">Asia/Kolkata (IST)</option>
+                <option value="America/New_York" th:selected="${user.timezone == 'America/New_York'}">America/New_York (EST)</option>
+                <option value="America/Los_Angeles" th:selected="${user.timezone == 'America/Los_Angeles'}">America/Los_Angeles (PST)</option>
+                <option value="Europe/London" th:selected="${user.timezone == 'Europe/London'}">Europe/London (GMT)</option>
+                <option value="Europe/Berlin" th:selected="${user.timezone == 'Europe/Berlin'}">Europe/Berlin (CET)</option>
+                <option value="Asia/Singapore" th:selected="${user.timezone == 'Asia/Singapore'}">Asia/Singapore (SGT)</option>
+                <option value="Australia/Sydney" th:selected="${user.timezone == 'Australia/Sydney'}">Australia/Sydney (AEST)</option>
+                <option value="UTC" th:selected="${user.timezone == 'UTC'}">UTC</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column -->
+        <div>
+          <div class="card mb-3">
+            <h3 class="mb-3"><i class="fas fa-file-pdf"></i> Resume</h3>
+            <div th:if="${user.resumeFilename != null}" class="alert alert-success mb-3" style="font-size:0.85rem;">
+              <i class="fas fa-check"></i>
+              Resume uploaded: <strong th:text="${user.resumeOriginalName}"></strong>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Upload / Update Resume</label>
+              <input type="file" id="resumeFile" name="resumeFile" class="form-control"
+                     accept=".pdf,.doc,.docx" style="padding:8px;"/>
+              <small class="text-muted">PDF, DOC, DOCX (Max 10MB)</small>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3 class="mb-3"><i class="fas fa-info-circle"></i> Account Info</h3>
+            <div style="font-size:0.88rem; color:var(--text-muted);">
+              <p><strong>Role:</strong> Job Seeker</p>
+              <p class="mt-1"><strong>Joined:</strong>
+                <span th:text="${#temporals.format(user.createdAt,'MMM dd, yyyy')}"></span>
+              </p>
+              <p class="mt-1"><strong>Status:</strong>
+                <span class="badge badge-success" th:if="${user.enabled}">Active</span>
+                <span class="badge badge-danger" th:unless="${user.enabled}">Disabled</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <button type="submit" class="btn btn-primary btn-lg">
+          <i class="fas fa-save"></i> Save Profile
+        </button>
+      </div>
+    </form>
+  </main>
+</div>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

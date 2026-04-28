@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${title} + ' | RemoteWork Hub'">RemoteWork Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+
+<nav th:fragment="navbar" class="navbar">
+    <div class="nav-container">
+        <a th:href="@{/}" class="nav-brand">
+            <span class="brand-icon">⚡</span>
+            <span>RemoteWork<strong>Hub</strong></span>
+        </a>
+
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+            <span></span><span></span><span></span>
+        </button>
+
+        <div class="nav-menu" id="navMenu">
+            <a th:href="@{/jobs}" class="nav-link">Browse Jobs</a>
+
+            <div sec:authorize="isAuthenticated()">
+                <!-- Job Seeker Nav -->
+                <span sec:authorize="hasRole('JOBSEEKER')" class="nav-group">
+                    <a th:href="@{/jobseeker/dashboard}" class="nav-link">Dashboard</a>
+                    <a th:href="@{/jobseeker/applications}" class="nav-link">My Applications</a>
+                </span>
+                <!-- Employer Nav -->
+                <span sec:authorize="hasRole('EMPLOYER')" class="nav-group">
+                    <a th:href="@{/employer/dashboard}" class="nav-link">Dashboard</a>
+                    <a th:href="@{/employer/jobs/new}" class="nav-link nav-cta">Post Job</a>
+                </span>
+                <!-- Admin Nav -->
+                <span sec:authorize="hasRole('ADMIN')" class="nav-group">
+                    <a th:href="@{/admin/dashboard}" class="nav-link">Admin Panel</a>
+                </span>
+
+                <div class="nav-user-menu">
+                    <a th:href="@{/jobseeker/notifications}" sec:authorize="hasRole('JOBSEEKER')" class="nav-notif">
+                        <i class="fas fa-bell"></i>
+                        <span class="notif-badge" th:if="${unreadCount != null and unreadCount > 0}" th:text="${unreadCount}">0</span>
+                    </a>
+                    <a th:href="@{/employer/notifications}" sec:authorize="hasRole('EMPLOYER')" class="nav-notif">
+                        <i class="fas fa-bell"></i>
+                        <span class="notif-badge" th:if="${unreadCount != null and unreadCount > 0}" th:text="${unreadCount}">0</span>
+                    </a>
+                    <a th:href="@{/logout}" class="nav-link nav-logout">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+
+            <div sec:authorize="!isAuthenticated()" class="nav-auth">
+                <a th:href="@{/login}" class="nav-link">Login</a>
+                <a th:href="@{/register}" class="btn btn-primary btn-sm">Get Started</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<footer th:fragment="footer">
+    <div class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <span class="brand-icon">⚡</span>
+                <strong>RemoteWork Hub</strong>
+                <p>Connecting remote talent with global opportunities.</p>
+            </div>
+            <div class="footer-links">
+                <a th:href="@{/jobs}">Browse Jobs</a>
+                <a th:href="@{/register/employer}">Post a Job</a>
+                <a th:href="@{/register/jobseeker}">Find Work</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2024 RemoteWork Hub. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+</html>

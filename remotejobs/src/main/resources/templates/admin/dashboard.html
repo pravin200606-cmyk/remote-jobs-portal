@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Admin Dashboard')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="dashboard-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-section">Admin Panel</div>
+    <ul class="sidebar-nav">
+      <li><a th:href="@{/admin/dashboard}" class="active"><i class="fas fa-tachometer-alt nav-icon"></i> Dashboard</a></li>
+      <li><a th:href="@{/admin/users}"><i class="fas fa-users nav-icon"></i> Manage Users</a></li>
+      <li><a th:href="@{/admin/jobs}"><i class="fas fa-briefcase nav-icon"></i> Manage Jobs</a></li>
+      <li><a th:href="@{/jobs}"><i class="fas fa-globe nav-icon"></i> View Site</a></li>
+      <li><a th:href="@{/logout}"><i class="fas fa-sign-out-alt nav-icon"></i> Logout</a></li>
+    </ul>
+  </aside>
+
+  <main class="main-content">
+    <div class="d-flex justify-between align-center mb-4" style="flex-wrap:wrap; gap:1rem;">
+      <div>
+        <h1 style="font-size:1.6rem;">Admin Dashboard</h1>
+        <p class="text-muted">Platform overview and management</p>
+      </div>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success" data-auto-dismiss>
+      <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon teal"><i class="fas fa-users"></i></div>
+        <div class="stat-info">
+          <div class="stat-value" th:text="${totalUsers}">0</div>
+          <div class="stat-label">Total Users</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon blue"><i class="fas fa-briefcase"></i></div>
+        <div class="stat-info">
+          <div class="stat-value" th:text="${totalJobs}">0</div>
+          <div class="stat-label">Active Jobs</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon amber"><i class="fas fa-building"></i></div>
+        <div class="stat-info">
+          <div class="stat-value" th:text="${totalEmployers}">0</div>
+          <div class="stat-label">Employers</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green"><i class="fas fa-user-tie"></i></div>
+        <div class="stat-info">
+          <div class="stat-value" th:text="${totalSeekers}">0</div>
+          <div class="stat-label">Job Seekers</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.5rem; margin-top:1.5rem;">
+      <!-- Recent Jobs -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fas fa-briefcase"></i> Recent Jobs</h3>
+          <a th:href="@{/admin/jobs}" class="btn btn-ghost btn-sm">View All</a>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead><tr><th>Title</th><th>Company</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr th:each="job : ${recentJobs}">
+                <td th:text="${job.title}" style="font-weight:500;"></td>
+                <td th:text="${job.companyName}" class="text-muted"></td>
+                <td>
+                  <span class="badge" th:classappend="${job.active} ? 'badge-success' : 'badge-danger'"
+                        th:text="${job.active} ? 'Active' : 'Off'"></span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Recent Users -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fas fa-users"></i> Recent Users</h3>
+          <a th:href="@{/admin/users}" class="btn btn-ghost btn-sm">View All</a>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead><tr><th>Name</th><th>Role</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr th:each="u : ${recentUsers}">
+                <td>
+                  <strong th:text="${u.fullName}"></strong><br/>
+                  <small class="text-muted" th:text="${u.email}"></small>
+                </td>
+                <td>
+                  <span class="badge badge-info"
+                        th:text="${#strings.replace(u.role.name(),'ROLE_','')}"></span>
+                </td>
+                <td>
+                  <span class="badge" th:classappend="${u.enabled} ? 'badge-success' : 'badge-danger'"
+                        th:text="${u.enabled} ? 'Active' : 'Banned'"></span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

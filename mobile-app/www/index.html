@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval'; img-src * data: blob:"/>
+  <title>RemoteWork Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/app.css"/>
+</head>
+<body>
+  <!-- Splash Overlay -->
+  <div id="splash" class="splash">
+    <div class="splash-logo">
+      <div class="splash-icon">🌐</div>
+      <h1>RemoteWork Hub</h1>
+      <p>Your gateway to remote careers</p>
+    </div>
+  </div>
+
+  <!-- App Shell -->
+  <div id="app" class="app hidden">
+    <!-- Top Bar -->
+    <header class="topbar" id="topbar">
+      <button class="topbar-back hidden" id="backBtn" onclick="router.back()">&#8592;</button>
+      <span class="topbar-title" id="topbarTitle">RemoteWork Hub</span>
+      <button class="topbar-menu" id="menuBtn" onclick="toggleMenu()">&#9776;</button>
+    </header>
+
+    <!-- Side Drawer -->
+    <div class="drawer-overlay hidden" id="drawerOverlay" onclick="closeMenu()"></div>
+    <nav class="drawer hidden" id="drawer">
+      <div class="drawer-header">
+        <div class="drawer-avatar" id="drawerAvatar">👤</div>
+        <div class="drawer-user">
+          <span id="drawerName">Guest</span>
+          <small id="drawerRole">Not logged in</small>
+        </div>
+      </div>
+      <ul class="drawer-links">
+        <li><a href="#" onclick="navigate('home')">🏠 Home</a></li>
+        <li><a href="#" onclick="navigate('jobs')">💼 Browse Jobs</a></li>
+        <li id="navDashboard" class="hidden"><a href="#" onclick="navigate('dashboard')">📊 Dashboard</a></li>
+        <li id="navProfile" class="hidden"><a href="#" onclick="navigate('profile')">👤 My Profile</a></li>
+        <li id="navApplications" class="hidden"><a href="#" onclick="navigate('applications')">📋 My Applications</a></li>
+        <li id="navPostJob" class="hidden"><a href="#" onclick="navigate('post-job')">➕ Post a Job</a></li>
+        <li id="navAdmin" class="hidden"><a href="#" onclick="navigate('admin')">🔧 Admin Panel</a></li>
+        <li id="navLogin" class=""><a href="#" onclick="navigate('login')">🔑 Login</a></li>
+        <li id="navRegister" class=""><a href="#" onclick="navigate('register')">📝 Register</a></li>
+        <li id="navLogout" class="hidden"><a href="#" onclick="logout()">🚪 Logout</a></li>
+      </ul>
+    </nav>
+
+    <!-- Page Container -->
+    <main class="page-container" id="pageContainer"></main>
+
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav" id="bottomNav">
+      <button class="bnav-item active" data-page="home" onclick="navigate('home')">
+        <span class="bnav-icon">🏠</span><span class="bnav-label">Home</span>
+      </button>
+      <button class="bnav-item" data-page="jobs" onclick="navigate('jobs')">
+        <span class="bnav-icon">💼</span><span class="bnav-label">Jobs</span>
+      </button>
+      <button class="bnav-item" data-page="applications" onclick="navigate('applications')" id="bnavApplications">
+        <span class="bnav-icon">📋</span><span class="bnav-label">Applied</span>
+      </button>
+      <button class="bnav-item" data-page="profile" onclick="navigate('profile')" id="bnavProfile">
+        <span class="bnav-icon">👤</span><span class="bnav-label">Profile</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast hidden"></div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

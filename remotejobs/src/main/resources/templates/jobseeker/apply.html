@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Apply for Job')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="section" style="padding: 2rem 1rem;">
+  <div class="container-md">
+    <a th:href="@{/jobs/{id}(id=${job.id})}" class="btn btn-ghost btn-sm mb-3">
+      <i class="fas fa-arrow-left"></i> Back to Job
+    </a>
+
+    <div style="display:grid; grid-template-columns: 1fr 340px; gap:1.5rem;">
+
+      <!-- Apply Form -->
+      <div class="card fade-in">
+        <h2 class="mb-1"><i class="fas fa-paper-plane"></i> Submit Application</h2>
+        <p class="text-muted mb-4">Applying for: <strong th:text="${job.title}"></strong> at <strong th:text="${job.companyName}"></strong></p>
+
+        <div th:if="${error}" class="alert alert-error" data-auto-dismiss>
+          <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+        </div>
+
+        <form th:action="@{/jobseeker/apply/{id}(id=${job.id})}" method="post" enctype="multipart/form-data">
+          <div class="form-group">
+            <label class="form-label">Cover Letter</label>
+            <textarea name="coverLetter" class="form-control" rows="8"
+                      data-max-chars="2000"
+                      placeholder="Dear Hiring Manager,&#10;&#10;I am excited to apply for the [Job Title] position at [Company]..."></textarea>
+            <small class="text-muted">A personalised cover letter greatly improves your chances!</small>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Resume</label>
+            <div th:if="${user.resumeFilename != null}" class="alert alert-info mb-2" style="font-size:0.85rem;">
+              <i class="fas fa-file-pdf"></i>
+              Using profile resume: <strong th:text="${user.resumeOriginalName}"></strong>
+              <br/><small>Upload below to use a different one for this application.</small>
+            </div>
+            <input type="file" name="resumeFile" class="form-control" accept=".pdf,.doc,.docx" style="padding:8px;"/>
+            <small class="text-muted">PDF, DOC, DOCX (Max 10MB)
+              <span th:unless="${user.resumeFilename != null}"> — Required if no profile resume uploaded</span>
+            </small>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary btn-lg">
+              <i class="fas fa-paper-plane"></i> Submit Application
+            </button>
+            <a th:href="@{/jobs/{id}(id=${job.id})}" class="btn btn-ghost btn-lg">Cancel</a>
+          </div>
+        </form>
+      </div>
+
+      <!-- Job Summary Sidebar -->
+      <div>
+        <div class="card mb-3">
+          <h3 class="mb-3">Job Summary</h3>
+          <div style="font-size:0.88rem;">
+            <div class="mb-2">
+              <span class="text-muted">Title</span><br/>
+              <strong th:text="${job.title}"></strong>
+            </div>
+            <div class="mb-2">
+              <span class="text-muted">Company</span><br/>
+              <strong th:text="${job.companyName}"></strong>
+            </div>
+            <div class="mb-2">
+              <span class="text-muted">Type</span><br/>
+              <span class="badge badge-muted" th:text="${#strings.replace(job.jobType.name(),'_',' ')}"></span>
+            </div>
+            <div class="mb-2">
+              <span class="text-muted">Level</span><br/>
+              <span class="badge badge-info" th:text="${#strings.replace(job.experienceLevel.name(),'_',' ')}"></span>
+            </div>
+            <div th:if="${job.salary}" class="mb-2">
+              <span class="text-muted">Salary</span><br/>
+              <strong class="text-success" th:text="${job.salary}"></strong>
+            </div>
+            <div th:if="${job.timezonePreference}" class="mb-2">
+              <span class="text-muted">Timezone</span><br/>
+              <span th:text="${job.timezonePreference}"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 class="mb-2">Your Profile</h3>
+          <div style="font-size:0.88rem;">
+            <p><strong th:text="${user.fullName}"></strong></p>
+            <p class="text-muted" th:text="${user.email}"></p>
+            <div th:if="${user.skills}" class="mt-2">
+              <span class="text-muted">Skills: </span>
+              <span th:text="${user.skills}"></span>
+            </div>
+            <a th:href="@{/jobseeker/profile}" class="btn btn-ghost btn-sm mt-2 btn-block">
+              <i class="fas fa-edit"></i> Update Profile
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

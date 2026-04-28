@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/layout :: head('Register as Job Seeker')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="auth-page" style="padding: 2rem 1rem;">
+    <div class="auth-card fade-in" style="max-width: 560px;">
+        <div class="auth-header">
+            <div style="font-size:2rem; margin-bottom:0.5rem;">👨‍💻</div>
+            <h1>Job Seeker Registration</h1>
+            <p>Create your free account and start finding remote jobs</p>
+        </div>
+
+        <div th:if="${error}" class="alert alert-error">
+            <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+        </div>
+
+        <form th:action="@{/register/jobseeker}" th:object="${user}" method="post">
+            <div class="form-row form-row-2">
+                <div class="form-group">
+                    <label class="form-label">Full Name *</label>
+                    <input type="text" th:field="*{fullName}" class="form-control" placeholder="John Doe" required/>
+                    <div class="form-error" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" th:field="*{phone}" class="form-control" placeholder="+1 234 567 8900"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Email Address *</label>
+                <input type="email" th:field="*{email}" class="form-control" placeholder="you@example.com" required/>
+                <div class="form-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+            </div>
+
+            <div class="form-row form-row-2">
+                <div class="form-group">
+                    <label class="form-label">Password *</label>
+                    <input type="password" th:field="*{password}" class="form-control" placeholder="Min 6 characters" required/>
+                    <div class="form-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Confirm Password *</label>
+                    <input type="password" th:field="*{confirmPassword}" class="form-control" placeholder="Repeat password" required/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Key Skills</label>
+                <input type="text" th:field="*{skills}" class="form-control" placeholder="Java, React, Python, AWS..."/>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Your Timezone</label>
+                <select th:field="*{timezone}" class="form-control">
+                    <option value="">Select Timezone</option>
+                    <option value="Asia/Kolkata">Asia/Kolkata (IST)</option>
+                    <option value="America/New_York">America/New_York (EST)</option>
+                    <option value="America/Los_Angeles">America/Los_Angeles (PST)</option>
+                    <option value="Europe/London">Europe/London (GMT)</option>
+                    <option value="Europe/Berlin">Europe/Berlin (CET)</option>
+                    <option value="Asia/Singapore">Asia/Singapore (SGT)</option>
+                    <option value="Australia/Sydney">Australia/Sydney (AEST)</option>
+                    <option value="UTC">UTC</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block btn-lg">
+                <i class="fas fa-user-plus"></i> Create Account
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            Already have an account? <a th:href="@{/login}">Sign in</a> |
+            <a th:href="@{/register}">Register as Employer</a>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
